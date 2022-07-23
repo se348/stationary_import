@@ -13,9 +13,9 @@ class RecentActivity extends StatelessWidget {
         child: Column(children: [
           Expanded(child: ListView(children: [
             for(i =0; i<10; i++)
-              Card(child: Container(padding:EdgeInsets.all(10),child: Text("Semir added 5 items to the store")),),
+              Card(elevation: 7,child: Container(padding:EdgeInsets.all(10),child: Text("Semir added 5 items to the store")),),
             for(i =0; i<10; i++)
-              Card(child: Container(padding:EdgeInsets.all(10),child: Text("Semir ordered 5 items of printers")),)
+              Card(elevation: 7,child: Container(padding:EdgeInsets.all(10),child: Text("Semir ordered 5 items of printers")),)
           ],))
         ]),
       ),
