@@ -1,67 +1,59 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:stationary_import/model/product.dart';
+import 'package:stationary_import/presentation/widget/individual_prod.dart';
+import 'package:stationary_import/provider/product_prov.dart';
 
-class ProductList extends StatelessWidget {
+class ProductList extends StatefulWidget {
   ProductList({Key? key}) : super(key: key);
-  List<String> ps = Product.productsfinding(PRODUCTS).toList();
+
+  @override
+  State<ProductList> createState() => _ProductListState();
+}
+
+class _ProductListState extends State<ProductList> {
+  bool isInit = false;
+  @override
+  void didChangeDependencies() {
+    if (!isInit) {
+      Provider.of<ProductProvider>(context, listen: false).getProducts();
+    }
+    setState(() {
+      isInit = true;
+    });
+    super.didChangeDependencies();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Expanded(
-          child: GridView.builder(
-            itemCount: ps.length,
-            itemBuilder: (context, index) {
-              return InkWell(
-                onTap: () {
-                  Navigator.pushNamed(context, '/products',
-                      arguments: ps[index]);
+    Provider.of<ProductProvider>(context, listen: false).getProducts();
+    return Consumer<ProductProvider>(
+      builder: (context, value, child) => RefreshIndicator(
+        onRefresh: () {
+          return Provider.of<ProductProvider>(context, listen: false)
+              .getProducts();
+        },
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Expanded(
+              child: GridView.builder(
+                itemCount: value.categories.length,
+                itemBuilder: (context, index) {
+                  return ProdInvdiv(
+                      product: value.categories[index], index: index);
                 },
-                child: Card(
-                  elevation: 7,
-                  child: Container(
-                    decoration: BoxDecoration(
-                        gradient: RadialGradient(
-                            colors: index % 4 == 2 || index % 4 == 3
-                                ? [
-                                    Theme.of(context).colorScheme.primary,
-                                    Theme.of(context)
-                                        .colorScheme
-                                        .primary
-                                        .withOpacity(0.85)
-                                  ]
-                                : [
-                                    Theme.of(context).colorScheme.secondary,
-                                    Theme.of(context)
-                                        .colorScheme
-                                        .secondary
-                                        .withOpacity(0.85)
-                                  ]),
-                        borderRadius: BorderRadius.all(Radius.circular(10))),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          ps[index].toUpperCase(),
-                          style: Theme.of(context).textTheme.titleLarge,
-                        ),
-                      ],
-                    ),
-                  ),
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 15,
+                  mainAxisSpacing: 15,
+                  childAspectRatio: 5 / 3,
                 ),
-              );
-            },
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              crossAxisSpacing: 15,
-              mainAxisSpacing: 15,
-              childAspectRatio: 5 / 3,
-            ),
-          ),
-        )
-      ],
+              ),
+            )
+          ],
+        ),
+      ),
     );
   }
 }

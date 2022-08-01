@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:provider/provider.dart';
+import 'package:stationary_import/provider/order_prov.dart';
 
 import '../../model/product.dart';
 import '../../model/user.dart';
@@ -8,48 +10,44 @@ import '../item_tile.dart';
 import 'individual_pending_order.dart';
 import 'order_form.dart';
 
-class PendingOrder extends StatelessWidget {
+class PendingOrder extends StatefulWidget {
   const PendingOrder({Key? key}) : super(key: key);
 
   @override
+  State<PendingOrder> createState() => _PendingOrderState();
+}
+
+class _PendingOrderState extends State<PendingOrder> {
+  bool isInit = false;
+  @override
+  void didChangeDependencies() {
+    if (!isInit) {
+      Provider.of<OrderProv>(context, listen: false).getUnconfirmedOrders();
+    }
+    setState(() {
+      isInit = true;
+    });
+    super.didChangeDependencies();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Stack(children: [
-      Container(
-        padding: const EdgeInsets.only(top: 50),
+    Provider.of<OrderProv>(context, listen: false).getUnconfirmedOrders();
+    return Consumer<OrderProv>(
+      builder: (context, value, child) => Container(
         child: Column(children: [
           Expanded(
-              child: ListView(
-            children: [
-              for (int i = 0; i < 10; i++)
-                IndividualPendingOrder(
-                  product: Product(
-                      name: "bic",
-                      description: "this is sharp pen",
-                      packageAmount: 400,
-                      individualQuantity: 10,
-                      measurement: "piece",
-                      price: 70.0,
-                      category: "pen2"),
-                  user: User(
-                      name: "semir ahmed",
-                      email: "semir2578@gmail.com",
-                      phoneNumber: "0984836744"),
-                  quantity: 20,
-                ),
-              const Divider(),
-            ],
+              child: ListView.separated(
+            itemCount: value.orders.length,
+            separatorBuilder: (context, index) => Divider(),
+            itemBuilder: (context, index) => IndividualPendingOrder(
+                product: value.orders[index].product,
+                user: value.orders[index].user,
+                quantity: value.orders[index].quantity,
+                id: value.orders[index].id),
           )),
         ]),
       ),
-      Align(
-        alignment: Alignment.topCenter,
-        child: Container(
-            height: 50,
-            width: double.infinity,
-            child: AppBar(
-              title: const Text("Orders"),
-            )),
-      )
-    ]);
+    );
   }
 }

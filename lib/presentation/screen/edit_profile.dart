@@ -1,19 +1,22 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:stationary_import/model/user.dart';
+import 'package:stationary_import/provider/profile_pov.dart';
 
 class EditProfile extends StatelessWidget {
   EditProfile({Key? key}) : super(key: key);
 
   TextEditingController email = TextEditingController();
   TextEditingController phone = TextEditingController();
+  int status = -1;
 
   @override
   Widget build(BuildContext context) {
     User user = ModalRoute.of(context)!.settings.arguments as User;
-    email.text =user.email;
-    phone.text =user.phoneNumber;
+    email.text = user.email;
+    phone.text = user.phoneNumber!;
     return Form(
       child: Scaffold(
         appBar: AppBar(title: Text("Edit profile")),
@@ -35,6 +38,7 @@ class EditProfile extends StatelessWidget {
                               left: 30, right: 30, bottom: 12),
                           child: TextFormField(
                             controller: email,
+                            textInputAction: TextInputAction.next,
                             validator: (email) {
                               if (email == null || email.isEmpty) {
                                 return "Please enter email";
@@ -77,14 +81,33 @@ class EditProfile extends StatelessWidget {
                                     borderSide: BorderSide(width: 5.0))),
                           )),
                       TextButton(
-                          onPressed:  () {
-                              Navigator.pushNamed(context, "/change-password");
-                            }, child: Text("change password")),
+                          onPressed: () {
+                            Navigator.pushNamed(context, "/change-password",
+                                arguments: user);
+                          },
+                          child: Text("change password")),
                       Padding(
                           padding: const EdgeInsets.all(10.0),
                           child: ElevatedButton(
-                            onPressed:null,
-                            child: Text("save changes"),
+                            onPressed: (() async {
+                              status = await Provider.of<ProfileProv>(context,
+                                      listen: false)
+                                  .changeMyinfo(
+                                      user.name!, phone.text, email.text);
+                              if (status == 200) {
+                                Navigator.of(context).pop(status);
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text("Succeeded")));
+                              }
+                              if (status == 400) {
+                                Navigator.of(context).pop();
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text("Failed")));
+                              }
+                            }),
+                            child: status == 0
+                                ? const CircularProgressIndicator()
+                                : const Text("save changes"),
                           ))
                     ],
                   ),
