@@ -6,6 +6,7 @@ import 'package:stationary_import/presentation/widget/pending_order.dart';
 import 'package:stationary_import/presentation/screen/shop.dart';
 
 import '../../model/user.dart';
+import '../../provider/product_prov.dart';
 import '../../provider/profile_pov.dart';
 import '../widget/profile.dart';
 
@@ -48,15 +49,29 @@ class _WholeState extends State<Whole> {
                     onPressed: (() {
                       Navigator.of(context).pushNamed("/recent-activity");
                     }),
-                    icon: const Icon(Icons.punch_clock))
+                    icon: const Icon(Icons.punch_clock)),
+                IconButton(
+                  icon: const Icon(
+                    Icons.logout,
+                    color: Colors.white,
+                  ),
+                  onPressed: (() {
+                    Navigator.of(context).pushReplacementNamed("/");
+                  }),
+                ),
               ]
             : null,
       ),
       floatingActionButton: curr_index == 0
           ? FloatingActionButton(
               child: const Icon(Icons.add),
-              onPressed: () {
-                Navigator.pushNamed(context, "/store-form");
+              onPressed: () async {
+                final status =
+                    await Navigator.pushNamed(context, "/store-form");
+                if (status == 1) {
+                  await Provider.of<ProductProvider>(context, listen: false)
+                      .getProducts();
+                }
               })
           : null,
       bottomNavigationBar: BottomNavigationBar(

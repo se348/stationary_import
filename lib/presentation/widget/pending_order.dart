@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:provider/provider.dart';
+import 'package:stationary_import/presentation/widget/custom_indicator.dart';
+import 'package:stationary_import/presentation/widget/no_internet.dart';
 import 'package:stationary_import/provider/order_prov.dart';
 
 import '../../model/product.dart';
@@ -34,20 +36,30 @@ class _PendingOrderState extends State<PendingOrder> {
   Widget build(BuildContext context) {
     Provider.of<OrderProv>(context, listen: false).getUnconfirmedOrders();
     return Consumer<OrderProv>(
-      builder: (context, value, child) => Container(
-        child: Column(children: [
-          Expanded(
-              child: ListView.separated(
-            itemCount: value.orders.length,
-            separatorBuilder: (context, index) => Divider(),
-            itemBuilder: (context, index) => IndividualPendingOrder(
-                product: value.orders[index].product,
-                user: value.orders[index].user,
-                quantity: value.orders[index].quantity,
-                id: value.orders[index].id),
-          )),
-        ]),
-      ),
+      builder: (context, value, child) => value.status == 0
+          ? const Center(child: CustomIndicator())
+          : value.status == -2
+              ? NoInternet()
+              : Container(
+                  child: RefreshIndicator(
+                    onRefresh: () {
+                      return Provider.of<OrderProv>(context, listen: false)
+                          .getUnconfirmedOrders();
+                    },
+                    child: Column(children: [
+                      Expanded(
+                          child: ListView.separated(
+                        itemCount: value.orders.length,
+                        separatorBuilder: (context, index) => Divider(),
+                        itemBuilder: (context, index) => IndividualPendingOrder(
+                            product: value.orders[index].product,
+                            user: value.orders[index].user,
+                            quantity: value.orders[index].quantity,
+                            id: value.orders[index].id),
+                      )),
+                    ]),
+                  ),
+                ),
     );
   }
 }

@@ -7,22 +7,28 @@ import 'dart:async';
 
 class SigningUp with ChangeNotifier {
   String _url = URL.unconfirmedUser;
+  int status = -1;
 
   Future<int> addUser(User user) async {
-    int status = 0;
+    status = 0;
+    notifyListeners();
     final body = jsonEncode(<String, String>{
       "name": user.name!,
       "email": user.email,
       "phoneNumber": user.phoneNumber!,
       "password": user.password!
     });
-    http.Response res = await http.post(Uri.parse(_url),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-        body: body);
+    try {
+      http.Response res = await http.post(Uri.parse(_url),
+          headers: <String, String>{
+            'Content-Type': 'application/json; charset=UTF-8',
+          },
+          body: body);
 
-    status = res.statusCode;
+      status = res.statusCode;
+    } catch (err) {
+      status = -2;
+    }
     notifyListeners();
     return status;
   }

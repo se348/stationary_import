@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:stationary_import/presentation/widget/custom_indicator.dart';
 import 'package:stationary_import/provider/login_prov.dart';
 
 import '../../model/user.dart';
@@ -14,9 +15,9 @@ class LoginPage extends StatelessWidget {
   TextEditingController email = TextEditingController();
 
   TextEditingController password = TextEditingController();
-  int status = -1;
   @override
   Widget build(BuildContext context) {
+    var cat = context;
     return Consumer<LoginProv>(
       builder: (context, value, child) => Scaffold(
         appBar: AppBar(title: const Text("Login")),
@@ -87,27 +88,41 @@ class LoginPage extends StatelessWidget {
                     ),
                     Padding(
                         padding: const EdgeInsets.all(25.0),
-                        child: ElevatedButton(
-                          onPressed: () async {
-                            status = await Provider.of<LoginProv>(context,
-                                    listen: false)
-                                .loginUser(
-                              User(email: email.text, password: password.text),
-                            );
-                            if (status == 200) {
-                              Navigator.pushReplacementNamed(context, "/whole");
-                            }
-                            if (status == 400) {
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(const SnackBar(
-                                      content: Text(
-                                "Email or password incorrect",
-                              )));
-                            }
-                          },
-                          child: status == 0
-                              ? const CircularProgressIndicator()
-                              : const Text("Login"),
+                        child: Consumer<LoginProv>(
+                          builder: (context, value, child) => ElevatedButton(
+                            onPressed: value.status == 0
+                                ? null
+                                : () async {
+                                    await Provider.of<LoginProv>(context,
+                                            listen: false)
+                                        .loginUser(
+                                      User(
+                                          email: email.text,
+                                          password: password.text),
+                                    );
+                                    if (value.status == 200) {
+                                      Navigator.pushReplacementNamed(
+                                          cat, "/whole");
+                                    }
+                                    if (value.status == 400) {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(const SnackBar(
+                                              content: Text(
+                                        "Email or password incorrect",
+                                      )));
+                                    }
+                                    if (value.status == -2) {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(const SnackBar(
+                                              content: Text(
+                                        "No internet connection",
+                                      )));
+                                    }
+                                  },
+                            child: value.status == 0
+                                ? const CustomIndicator()
+                                : const Text("Login"),
+                          ),
                         ))
                   ],
                 ),

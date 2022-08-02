@@ -13,7 +13,6 @@ class IndividualUser extends StatefulWidget {
 
 class _IndividualUserState extends State<IndividualUser> {
   String role = "employee";
-  int status = -1;
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -92,30 +91,40 @@ class _IndividualUserState extends State<IndividualUser> {
                   backgroundImage: AssetImage("assets/anonymous.png")),
             ],
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              TextButton(
-                  onPressed: () async {
-                    status = await Provider.of<UnconfirmedUsers>(context,
-                            listen: false)
-                        .confirmUser(widget.user.id!, role, 0);
-                  },
-                  child: const Text("No")),
-              const SizedBox(
-                width: 8,
-              ),
-              TextButton(
-                  onPressed: () async {
-                    status = await Provider.of<UnconfirmedUsers>(context,
-                            listen: false)
-                        .confirmUser(widget.user.id!, role, 1);
-                  },
-                  child: Text("Yes")),
-              SizedBox(
-                width: 8,
-              ),
-            ],
+          Consumer<UnconfirmedUsers>(
+            builder: (context, value, child) => Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                TextButton(
+                    onPressed: value.mine_status == 0
+                        ? null
+                        : () async {
+                            await Provider.of<UnconfirmedUsers>(context,
+                                    listen: false)
+                                .confirmUser(widget.user.id!, role, 0);
+                          },
+                    child: value.mine_status == 0
+                        ? CircularProgressIndicator()
+                        : const Text("No")),
+                const SizedBox(
+                  width: 8,
+                ),
+                TextButton(
+                    onPressed: value.mine_status == 0
+                        ? null
+                        : () async {
+                            await Provider.of<UnconfirmedUsers>(context,
+                                    listen: false)
+                                .confirmUser(widget.user.id!, role, 1);
+                          },
+                    child: value.mine_status == 0
+                        ? CircularProgressIndicator()
+                        : Text("Yes")),
+                SizedBox(
+                  width: 8,
+                ),
+              ],
+            ),
           )
         ]),
       ),

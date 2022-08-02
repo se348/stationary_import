@@ -17,7 +17,6 @@ class OrderForm extends StatefulWidget {
 
 class _OrderFormState extends State<OrderForm> {
   double quantity = 0;
-  int status = -1;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -83,54 +82,57 @@ class _OrderFormState extends State<OrderForm> {
                         //barrierDismissible: false,
                         context: context,
                         builder: (BuildContext context) {
-                          return AlertDialog(
-                            title: const Text("Are you sure?"),
-                            content: SingleChildScrollView(
-                              child: ListBody(children: [
-                                Text("Item name:- ${widget.product.name}"),
-                                Text("Item quatity:- ${quantity}"),
-                                Text(
-                                    "Item price total:- ${widget.product.price * quantity}")
-                              ]),
+                          return Consumer<OrderProv>(
+                            builder: (context, value, child) => AlertDialog(
+                              title: const Text("Are you sure?"),
+                              content: SingleChildScrollView(
+                                child: ListBody(children: [
+                                  Text("Item name:- ${widget.product.name}"),
+                                  Text("Item quatity:- ${quantity}"),
+                                  Text(
+                                      "Item price total:- ${widget.product.price * quantity}")
+                                ]),
+                              ),
+                              actions: value.mine_status == 0
+                                  ? [CircularProgressIndicator()]
+                                  : [
+                                      TextButton(
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                          },
+                                          child: Text("No")),
+                                      TextButton(
+                                          onPressed: () async {
+                                            await Provider.of<OrderProv>(
+                                                    context,
+                                                    listen: false)
+                                                .placeOrder(widget.product.id!,
+                                                    quantity.toInt());
+                                            if (value.mine_status == 200) {
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(SnackBar(
+                                                      content: Text(
+                                                          "Your order is placed wait for confirmation")));
+                                              Navigator.of(context).pop();
+                                              Navigator.of(context).pop();
+                                            }
+                                            if (value.mine_status == 400 ||
+                                                value.mine_status == -2) {
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(SnackBar(
+                                                      content: Text(
+                                                          "Some error occurred")));
+                                              Navigator.of(context).pop();
+                                              Navigator.of(context).pop();
+                                            }
+                                          },
+                                          child: const Text("Yes")),
+                                    ],
                             ),
-                            actions: status == 0
-                                ? [CircularProgressIndicator()]
-                                : [
-                                    TextButton(
-                                        onPressed: () {
-                                          Navigator.of(context).pop();
-                                        },
-                                        child: Text("No")),
-                                    TextButton(
-                                        onPressed: () async {
-                                          status = await Provider.of<OrderProv>(
-                                                  context,
-                                                  listen: false)
-                                              .placeOrder(widget.product.id!,
-                                                  quantity.toInt());
-                                          if (status == 200) {
-                                            ScaffoldMessenger.of(context)
-                                                .showSnackBar(SnackBar(
-                                                    content: Text(
-                                                        "Your order is placed wait for confirmation")));
-                                            Navigator.of(context).pop();
-                                            Navigator.of(context).pop();
-                                          }
-                                          if (status == 400) {
-                                            ScaffoldMessenger.of(context)
-                                                .showSnackBar(SnackBar(
-                                                    content: Text(
-                                                        "Some error occurred")));
-                                            Navigator.of(context).pop();
-                                            Navigator.of(context).pop();
-                                          }
-                                        },
-                                        child: Text("Yes")),
-                                  ],
                           );
                         });
                   }),
-                  child: Text("submit")),
+                  child: const Text("submit")),
             ],
           )
         ]),

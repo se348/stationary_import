@@ -97,35 +97,44 @@ class _PassworsChangeState extends State<PassworsChange> {
                           )),
                       Padding(
                           padding: const EdgeInsets.all(10.0),
-                          child: ElevatedButton(
-                            onPressed: () {
-                              Provider.of<ProfileProv>(context, listen: false)
-                                  .changeMyPassword(user.id!, old_password.text,
-                                      new_password.text)
-                                  .then((status) {
-                                if (status == 200) {
-                                  Navigator.of(context).pop();
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                          content: Text(
-                                              "Successfully changed password")));
-                                }
-                                if (status == 400) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                          content: Text("password incorrect")));
-                                } else {
-                                  Navigator.of(context).pop();
+                          child: Consumer<ProfileProv>(
+                              builder: (context, value, child) =>
+                                  ElevatedButton(
+                                    onPressed: value.another_status == 0
+                                        ? null
+                                        : () async {
+                                            await Provider.of<ProfileProv>(
+                                                    context,
+                                                    listen: false)
+                                                .changeMyPassword(
+                                                    user.id!,
+                                                    old_password.text,
+                                                    new_password.text);
 
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                          content:
-                                              Text("Please try again latter")));
-                                }
-                              });
-                            },
-                            child: const Text("save changes"),
-                          ))
+                                            if (value.another_status == 200) {
+                                              Navigator.of(context).pop();
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(const SnackBar(
+                                                      content: Text(
+                                                          "Successfully changed password")));
+                                            }
+                                            if (value.another_status == 400) {
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(const SnackBar(
+                                                      content: Text(
+                                                          "password incorrect")));
+                                            }
+                                            if (value.another_status == -2) {
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(const SnackBar(
+                                                      content: Text(
+                                                          "No internet connection")));
+                                            }
+                                          },
+                                    child: value.another_status == 0
+                                        ? const CircularProgressIndicator()
+                                        : const Text("save changes"),
+                                  )))
                     ],
                   ),
                 ],

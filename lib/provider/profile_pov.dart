@@ -8,59 +8,77 @@ import 'package:stationary_import/provider/url.dart';
 class ProfileProv with ChangeNotifier {
   User? me;
   String _url = URL.me;
+  int new_status = -1;
+  int status = -1;
+  int another_status = -1;
   Future<int> getMyInfo() async {
-    int status = 0;
+    new_status = 0;
+    notifyListeners();
     String token =
         "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MmU1MjJmZWNjOWU1ODI3ZWFiNjllNGYiLCJpYXQiOjE2NTkyMDkxNTB9.Hr9rdQOBsZq8KrLeIMxQnTrKTHqD07z5OICthGMwgBo";
-    http.Response res =
-        await http.get(Uri.parse(_url), headers: {'auth-token': URL.token});
-    status = res.statusCode;
-    if (status == 200) {
-      Map map_c = jsonDecode(res.body);
-      me = User(
-          name: map_c['name'],
-          email: map_c['email'],
-          phoneNumber: map_c['phoneNumber'],
-          id: map_c['_id'],
-          role: map_c['role']);
+    try {
+      await Future.delayed(Duration(seconds: 5));
+      http.Response res =
+          await http.get(Uri.parse(_url), headers: {'auth-token': URL.token});
+      new_status = res.statusCode;
+      if (new_status == 200) {
+        Map map_c = jsonDecode(res.body);
+        me = User(
+            name: map_c['name'],
+            email: map_c['email'],
+            phoneNumber: map_c['phoneNumber'],
+            id: map_c['_id'],
+            role: map_c['role']);
+      }
+    } catch (err) {
+      new_status = -2;
     }
     notifyListeners();
-    return status;
+    return new_status;
   }
 
   Future<int> changeMyinfo(String name, String phone, String email) async {
-    int status = 0;
+    status = 0;
+    notifyListeners();
     Map body = {"name": name, "email": email, 'phoneNumber': phone};
     String token =
         "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MmU1MjJmZWNjOWU1ODI3ZWFiNjllNGYiLCJpYXQiOjE2NTkyMDkxNTB9.Hr9rdQOBsZq8KrLeIMxQnTrKTHqD07z5OICthGMwgBo";
-    http.Response res = await http.put(Uri.parse(_url),
-        headers: {
-          'auth-token': URL.token,
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-        body: jsonEncode(body));
-    status = res.statusCode;
+    try {
+      http.Response res = await http.put(Uri.parse(_url),
+          headers: {
+            'auth-token': URL.token,
+            'Content-Type': 'application/json; charset=UTF-8',
+          },
+          body: jsonEncode(body));
+      status = res.statusCode;
+    } catch (err) {
+      status = -2;
+    }
     notifyListeners();
     return status;
   }
 
   Future<int> changeMyPassword(
       String id, String oldPassword, String password) async {
+    another_status = 0;
+    notifyListeners();
     String new_url = '${URL.password}/${id}';
-    print(new_url);
     int status = 0;
     Map body = {'old_password': oldPassword, 'new_password': password};
-    String token =
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MmU1MjJmZWNjOWU1ODI3ZWFiNjllNGYiLCJpYXQiOjE2NTkyMDkxNTB9.Hr9rdQOBsZq8KrLeIMxQnTrKTHqD07z5OICthGMwgBo";
-    http.Response res = await http.put(Uri.parse(new_url),
-        headers: {
-          'auth-token': URL.token,
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-        body: jsonEncode(body));
-    status = res.statusCode;
-    print(res.statusCode);
+    try {
+      String token =
+          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MmU1MjJmZWNjOWU1ODI3ZWFiNjllNGYiLCJpYXQiOjE2NTkyMDkxNTB9.Hr9rdQOBsZq8KrLeIMxQnTrKTHqD07z5OICthGMwgBo";
+      http.Response res = await http.put(Uri.parse(new_url),
+          headers: {
+            'auth-token': URL.token,
+            'Content-Type': 'application/json; charset=UTF-8',
+          },
+          body: jsonEncode(body));
+      another_status = res.statusCode;
+    } catch (err) {
+      another_status = -2;
+    }
     notifyListeners();
-    return status;
+    return another_status;
   }
 }

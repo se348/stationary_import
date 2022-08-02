@@ -88,26 +88,37 @@ class EditProfile extends StatelessWidget {
                           child: Text("change password")),
                       Padding(
                           padding: const EdgeInsets.all(10.0),
-                          child: ElevatedButton(
-                            onPressed: (() async {
-                              status = await Provider.of<ProfileProv>(context,
-                                      listen: false)
-                                  .changeMyinfo(
-                                      user.name!, phone.text, email.text);
-                              if (status == 200) {
-                                Navigator.of(context).pop(status);
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(content: Text("Succeeded")));
-                              }
-                              if (status == 400) {
-                                Navigator.of(context).pop();
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(content: Text("Failed")));
-                              }
-                            }),
-                            child: status == 0
-                                ? const CircularProgressIndicator()
-                                : const Text("save changes"),
+                          child: Consumer<ProfileProv>(
+                            builder: (context, value, child) => ElevatedButton(
+                              onPressed: value.status == 0
+                                  ? null
+                                  : (() async {
+                                      await Provider.of<ProfileProv>(context,
+                                              listen: false)
+                                          .changeMyinfo(user.name!, phone.text,
+                                              email.text);
+                                      if (value.status == 200) {
+                                        Navigator.of(context).pop(status);
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(SnackBar(
+                                                content: Text("Succeeded")));
+                                      }
+                                      if (value.status == 400) {
+                                        Navigator.of(context).pop(status);
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(SnackBar(
+                                                content: Text("Failed")));
+                                      }
+                                      if (value.status == -2) {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(SnackBar(
+                                                content: Text("No internet")));
+                                      }
+                                    }),
+                              child: value.status == 0
+                                  ? const CircularProgressIndicator()
+                                  : const Text("save changes"),
+                            ),
                           ))
                     ],
                   ),

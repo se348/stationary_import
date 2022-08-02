@@ -30,34 +30,32 @@ class IndividualPendingOrder extends StatelessWidget {
               color: Theme.of(context).colorScheme.primary,
               child: Text(
                   "${user} has ordered $quantity pieces of ${product}. Confirm?")),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              IconButton(
-                  onPressed: () async {
-                    int status =
-                        await Provider.of<OrderProv>(context, listen: false)
-                            .confirmOrder(id!, -1);
-                    Provider.of<OrderProv>(context, listen: false)
-                        .getUnconfirmedOrders();
-                  },
-                  icon: const Icon(
-                    Icons.close,
-                    color: Colors.red,
-                  )),
-              IconButton(
-                  onPressed: () async {
-                    int status =
-                        await Provider.of<OrderProv>(context, listen: false)
-                            .confirmOrder(id!, -1);
-                    Provider.of<OrderProv>(context, listen: false)
-                        .getUnconfirmedOrders();
-                  },
-                  icon: const Icon(
-                    Icons.check,
-                    color: Colors.black,
-                  )),
-            ],
+          Consumer<OrderProv>(
+            builder: (context, value, child) => value.new_status == 0
+                ? CircularProgressIndicator()
+                : Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      IconButton(
+                          onPressed: () async {
+                            await Provider.of<OrderProv>(context, listen: false)
+                                .confirmOrder(id!, -1);
+                          },
+                          icon: const Icon(
+                            Icons.close,
+                            color: Colors.red,
+                          )),
+                      IconButton(
+                          onPressed: () async {
+                            await Provider.of<OrderProv>(context, listen: false)
+                                .confirmOrder(id!, 1);
+                          },
+                          icon: const Icon(
+                            Icons.check,
+                            color: Colors.black,
+                          )),
+                    ],
+                  ),
           ),
         ],
       )),
