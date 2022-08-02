@@ -1,5 +1,6 @@
 import "package:flutter/material.dart";
 import 'package:provider/provider.dart';
+import 'package:stationary_import/presentation/screen/splach_screen.dart';
 import 'package:stationary_import/presentation/widget/pending_order.dart';
 import 'package:stationary_import/presentation/screen/confirm_registration.dart';
 import 'package:stationary_import/presentation/screen/edit_profile.dart';
@@ -31,51 +32,52 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (context) => SigningUp()),
-        ChangeNotifierProvider(create: (context) => LoginProv()),
-        ChangeNotifierProvider(create: (context) => UnconfirmedUsers()),
-        ChangeNotifierProvider(create: ((context) => ProfileProv())),
-        ChangeNotifierProvider(create: (context) => ProductProvider()),
-        ChangeNotifierProvider(create: (context) => OrderProv()),
-        ChangeNotifierProvider(create: ((context) => LogsProv()))
-      ],
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          colorScheme: const ColorScheme(
-            brightness: Brightness.light,
-            primary: Colors.blueGrey,
-            onPrimary: Colors.white,
-            secondary: Colors.blueAccent,
-            onSecondary: Colors.white,
-            error: Colors.red,
-            onError: Colors.white,
-            background: Colors.white,
-            onBackground: Colors.blueAccent,
-            surface: Colors.lightGreen,
-            onSurface: Colors.blueGrey,
+        providers: [
+          ChangeNotifierProvider(create: (context) => SigningUp()),
+          ChangeNotifierProvider(create: (context) => LoginProv()),
+          ChangeNotifierProvider(create: (context) => UnconfirmedUsers()),
+          ChangeNotifierProvider(create: ((context) => ProfileProv())),
+          ChangeNotifierProvider(create: (context) => ProductProvider()),
+          ChangeNotifierProvider(create: (context) => OrderProv()),
+          ChangeNotifierProvider(create: ((context) => LogsProv()))
+        ],
+        child: MaterialApp(
+          debugShowCheckedModeBanner: false,
+          theme: ThemeData(
+            colorScheme: const ColorScheme(
+              brightness: Brightness.light,
+              primary: Colors.blueGrey,
+              onPrimary: Colors.white,
+              secondary: Colors.blueAccent,
+              onSecondary: Colors.white,
+              error: Colors.red,
+              onError: Colors.white,
+              background: Colors.white,
+              onBackground: Colors.blueAccent,
+              surface: Colors.lightGreen,
+              onSurface: Colors.blueGrey,
+            ),
+            textTheme: const TextTheme(
+                titleLarge:
+                    TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                titleMedium: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.blueGrey)),
           ),
-          textTheme: const TextTheme(
-              titleLarge: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-              titleMedium: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.blueGrey)),
-        ),
-        //initialRoute:"/recent-activity" ,
-        routes: {
-          "/recent-activity": (context) => RecentActivity(),
-          "/confirm-registration": (context) => ConfirmRegistration(),
-          "/change-password": (context) => const PassworsChange(),
-          "/edit-profile": ((context) => EditProfile()),
-          "/": (context) => LoginPage(),
-          "/sign-up": ((context) => SignUpPage()),
-          "/whole": (context) => Whole(),
-          '/products': (context) => SubCategory(),
-          "/store-form": (context) => StoreForm(),
-        },
-      ),
-    );
+          initialRoute: '/splash-screen',
+          routes: {
+            "/recent-activity": (context) => RecentActivity(),
+            "/confirm-registration": (context) => ConfirmRegistration(),
+            "/change-password": (context) => const PassworsChange(),
+            "/edit-profile": ((context) => EditProfile()),
+            "/": (context) => LoginPage(),
+            "/sign-up": ((context) => SignUpPage()),
+            "/whole": (context) => Whole(),
+            '/products': (context) => SubCategory(),
+            "/store-form": (context) => StoreForm(),
+            '/splash-screen': (context) => SplashScreen(),
+          },
+        ));
   }
 }

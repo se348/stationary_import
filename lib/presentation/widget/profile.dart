@@ -123,20 +123,6 @@ class Profile extends StatelessWidget {
                       ]),
                     ),
                   ),
-                  // Align(
-                  //   alignment: Alignment.topCenter,
-                  //   child: SafeArea(
-                  //     child: SizedBox(
-                  //         height: 50,
-                  //         child: AppBar(title: const Text("Your profile"), actions: [
-                  //           IconButton(
-                  //               onPressed: () {
-                  //                 Navigator.pushNamed(context, "/recent-activity");
-                  //               },
-                  //               icon: const Icon(Icons.pending_actions))
-                  //         ])),
-                  //   ),
-                  // ),
                   value.me?.role == "admin" || value.me?.role == "manager"
                       ? Align(
                           alignment: Alignment.bottomCenter,

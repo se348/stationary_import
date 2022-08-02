@@ -52,55 +52,26 @@ class Product {
     }
     return products;
   }
-}
 
-// List<Product> PRODUCTS = [
-//   Product(
-//       name: "lexi",
-//       description: "this is sharp pen",
-//       packageAmount: 500,
-//       individualQuantity: 20,
-//       measurement: "piece",
-//       price: 120,
-//       category: "pen"),
-//   Product(
-//       name: "bic",
-//       description: "this is sharp pen",
-//       packageAmount: 400,
-//       individualQuantity: 10,
-//       measurement: "piece",
-//       price: 70.0,
-//       category: "pen"),
-//   Product(
-//       name: "sinarline",
-//       description: "this is the best excercice",
-//       packageAmount: 400,
-//       individualQuantity: 10,
-//       measurement: "piece",
-//       price: 90.0,
-//       category: "excercise book"),
-//   Product(
-//       name: "lexi",
-//       description: "this is sharp pen",
-//       packageAmount: 500,
-//       individualQuantity: 20,
-//       measurement: "piece",
-//       price: 120,
-//       category: "pen1"),
-//   Product(
-//       name: "bic",
-//       description: "this is sharp pen",
-//       packageAmount: 400,
-//       individualQuantity: 10,
-//       measurement: "piece",
-//       price: 70.0,
-//       category: "pen2"),
-//   Product(
-//       name: "sinarline",
-//       description: "this is the best excercice",
-//       packageAmount: 400,
-//       individualQuantity: 10,
-//       measurement: "piece",
-//       price: 90.0,
-//       category: "excercise1 book"),
-// ];
+  factory Product.fromJson1(Map<String, dynamic> json) => Product(
+        id: json['_id'],
+        name: json['name'],
+        description: json['description'],
+        price: (json['price'] as double).round(),
+        packageAmount: (json['package'] as double).round(),
+        measurement: json['measurement'],
+        individualQuantity: (json['quantity'] as double).round(),
+        category: json['category'],
+      );
+
+  Map<String, dynamic> toJson() => {
+        '_id': id,
+        'name': name,
+        'description': description,
+        'price': price,
+        'package': packageAmount,
+        "measurement": measurement,
+        'quantity': individualQuantity,
+        'category': category,
+      };
+}

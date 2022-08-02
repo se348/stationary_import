@@ -5,6 +5,8 @@ import 'package:stationary_import/model/user.dart';
 import 'package:http/http.dart' as http;
 import 'package:stationary_import/provider/url.dart';
 
+import '../services/token_rel.dart';
+
 class ProfileProv with ChangeNotifier {
   User? me;
   String _url = URL.me;
@@ -18,8 +20,9 @@ class ProfileProv with ChangeNotifier {
         "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MmU1MjJmZWNjOWU1ODI3ZWFiNjllNGYiLCJpYXQiOjE2NTkyMDkxNTB9.Hr9rdQOBsZq8KrLeIMxQnTrKTHqD07z5OICthGMwgBo";
     try {
       await Future.delayed(Duration(seconds: 5));
-      http.Response res =
-          await http.get(Uri.parse(_url), headers: {'auth-token': URL.token});
+      http.Response res = await http.get(Uri.parse(_url), headers: {
+        'auth-token': await Token.getToken() ?? "",
+      });
       new_status = res.statusCode;
       if (new_status == 200) {
         Map map_c = jsonDecode(res.body);
@@ -46,7 +49,7 @@ class ProfileProv with ChangeNotifier {
     try {
       http.Response res = await http.put(Uri.parse(_url),
           headers: {
-            'auth-token': URL.token,
+            'auth-token': await Token.getToken() ?? "",
             'Content-Type': 'application/json; charset=UTF-8',
           },
           body: jsonEncode(body));
@@ -70,7 +73,7 @@ class ProfileProv with ChangeNotifier {
           "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MmU1MjJmZWNjOWU1ODI3ZWFiNjllNGYiLCJpYXQiOjE2NTkyMDkxNTB9.Hr9rdQOBsZq8KrLeIMxQnTrKTHqD07z5OICthGMwgBo";
       http.Response res = await http.put(Uri.parse(new_url),
           headers: {
-            'auth-token': URL.token,
+            'auth-token': await Token.getToken() ?? "",
             'Content-Type': 'application/json; charset=UTF-8',
           },
           body: jsonEncode(body));

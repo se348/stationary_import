@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:stationary_import/model/user.dart';
 import 'package:http/http.dart' as http;
+import '../services/token_rel.dart';
 import 'url.dart';
 import 'dart:convert';
 
@@ -37,7 +38,7 @@ class UnconfirmedUsers with ChangeNotifier {
     try {
       http.Response res = await http.post(Uri.parse(myUrl),
           headers: {
-            "auth-token": URL.token,
+            "auth-token": await Token.getToken() ?? "",
             'Content-Type': 'application/json; charset=UTF-8',
           },
           body: jsonEncode(body));

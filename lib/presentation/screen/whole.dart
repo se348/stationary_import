@@ -4,6 +4,7 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:provider/provider.dart';
 import 'package:stationary_import/presentation/widget/pending_order.dart';
 import 'package:stationary_import/presentation/screen/shop.dart';
+import 'package:stationary_import/provider/login_prov.dart';
 
 import '../../model/user.dart';
 import '../../provider/product_prov.dart';
@@ -55,7 +56,8 @@ class _WholeState extends State<Whole> {
                     Icons.logout,
                     color: Colors.white,
                   ),
-                  onPressed: (() {
+                  onPressed: (() async {
+                    await Provider.of<LoginProv>(context).deleteToken();
                     Navigator.of(context).pushReplacementNamed("/");
                   }),
                 ),

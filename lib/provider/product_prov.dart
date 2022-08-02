@@ -2,8 +2,10 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:stationary_import/cache/product_cache.dart';
 import 'package:stationary_import/provider/url.dart';
 import '../model/product.dart';
+import '../services/token_rel.dart';
 
 class ProductProvider with ChangeNotifier {
   List<Product> products = [];
@@ -12,6 +14,7 @@ class ProductProvider with ChangeNotifier {
   int status = -1;
   int mine_status = -1;
   String _url = URL.product;
+  final dbHelper = ProductCache.instance;
   getProductWithCat(category) {
     prodWithCat = Product.productsWithCategory(category, products).toList();
     notifyListeners();
@@ -23,18 +26,24 @@ class ProductProvider with ChangeNotifier {
     String token =
         "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MmU1MjJmZWNjOWU1ODI3ZWFiNjllNGYiLCJpYXQiOjE2NTkyMDkxNTB9.Hr9rdQOBsZq8KrLeIMxQnTrKTHqD07z5OICthGMwgBo";
     try {
+      products = await dbHelper.findAllProducts();
+      categories = await Product.productsfinding(products).toList();
+      status = 200;
+      notifyListeners();
       await Future.delayed(Duration(seconds: 4));
       http.Response res = await http.get(Uri.parse(_url), headers: {
-        'auth-token': URL.token,
+        'auth-token': await Token.getToken() ?? "",
       });
       status = res.statusCode;
       if (res.statusCode == 200) {
         List body = jsonDecode(res.body);
         products = Product.fromJson(body);
         categories = Product.productsfinding(products).toList();
+        await dbHelper.deleteProducts();
+        await dbHelper.insertProducts(products);
       }
     } catch (err) {
-      status = -2;
+      //status = -2;
     }
     notifyListeners();
     return status;
@@ -57,7 +66,7 @@ class ProductProvider with ChangeNotifier {
     try {
       http.Response res = await http.post(Uri.parse(_url),
           headers: {
-            "auth-token": URL.token,
+            "auth-token": await Token.getToken() ?? "",
             'Content-Type': 'application/json; charset=UTF-8',
           },
           body: jsonEncode(body));

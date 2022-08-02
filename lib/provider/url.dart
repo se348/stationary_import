@@ -8,5 +8,4 @@ class URL {
   static String password = '$user/password';
   static String order = '$base/api/temporary_orders';
   static String logs = '$base/api/logs';
-  static String token = "";
 }

@@ -25,4 +25,17 @@ class User {
     }
     return unconf_users;
   }
+
+  factory User.fromJson1(Map<String, dynamic> json) => User(
+      id: json['_id'],
+      name: json['name'],
+      phoneNumber: json['phoneNumber'],
+      email: json['email']);
+
+  Map<String, dynamic> toJson() => {
+        '_id': id,
+        'name': name,
+        'phoneNumber': phoneNumber,
+        'email': email,
+      };
 }

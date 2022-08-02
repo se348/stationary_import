@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:stationary_import/model/order.dart';
 
+import '../services/token_rel.dart';
 import 'url.dart';
 
 class OrderProv with ChangeNotifier {
@@ -19,7 +20,7 @@ class OrderProv with ChangeNotifier {
     try {
       http.Response res = await http.post(Uri.parse(_url),
           headers: {
-            "auth-token": URL.token,
+            "auth-token": await Token.getToken() ?? "",
             'Content-Type': 'application/json; charset=UTF-8',
           },
           body: jsonEncode(body));
@@ -37,7 +38,7 @@ class OrderProv with ChangeNotifier {
     try {
       http.Response res =
           await http.get(Uri.parse('$_url/unconfirmed'), headers: {
-        'auth-token': URL.token,
+        'auth-token': await Token.getToken() ?? "",
       });
       status = res.statusCode;
       if (res.statusCode == 200) {
@@ -58,7 +59,7 @@ class OrderProv with ChangeNotifier {
     try {
       http.Response res = await http.put(Uri.parse('$_url/$orderId'),
           headers: {
-            "auth-token": URL.token,
+            "auth-token": await Token.getToken() ?? "",
             'Content-Type': 'application/json; charset=UTF-8',
           },
           body: jsonEncode(body));
